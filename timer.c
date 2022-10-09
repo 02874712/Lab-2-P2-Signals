@@ -17,23 +17,26 @@ UPDATE YOUR MAKEFILE
 int sigCallFalseBool = 1; 
 int totalAlarm = 0; 
 int totalSeconds = 0;
+clock_t start, end; 
 
 void handler(int signum) //signal handler
 {
   if(signum == SIGALRM){
     printf("Hello World!\n");
-    totalSeconds = totalSeconds + alarm(3);
+    alarm(3);
     totalAlarm++;
     sigCallFalseBool = 0;    
-    printf("totalSeconds:%d", totalSeconds);
-
-  }
+    }
 
   else if(signum == SIGINT){
+    end = clock() - start; 
+  
     printf("\nProgram Finishing...\n");
     printf("Total Alarms: %d\n", totalAlarm);
-    totalSeconds = timer_gettime();
-    printf("Seconds: %d", totalSeconds);
+
+    double time_taken = ((double)end)/CLOCKS_PER_SEC;
+    printf("Seconds: %f\n", time_taken);
+
     exit(0);
   }
 
@@ -46,8 +49,7 @@ int main(int argc, char * argv[]){
   signal(SIGINT, handler);
 
   alarm(3);
-  timer_settime();
-  // printf("totalSeconds:%d", totalSeconds);
+  start = clock(); 
   totalAlarm++; 
 
   while(sigCallFalseBool){
@@ -55,6 +57,7 @@ int main(int argc, char * argv[]){
     if(sigCallFalseBool == 0){
       printf("Turing was right!\n");
     }
+    
     sigCallFalseBool = 1; 
 
   }; //busy wait for signal to be delivered
